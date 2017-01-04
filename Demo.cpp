@@ -29,12 +29,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	vecS exeNames = charPointers2StrVec(_exeNames);
 	vecS methodNames = charPointers2StrVec(_methodNames);
 
-	//Set label name.	文件说明
+	//Set label name.	组织文件说明结构
 	string strLabel = format("\n\n\nbar([FMeasureMaskFT; FMeasureMaskSC]');\ngrid on;\naxis([0 %d 0 1]);\nmethodLabels = {'%s'", methodNames.size() + 1, _S(methodNames[0]));
 	for (int i = 1; i < methodNames.size(); i++)
 		strLabel += format(", '%s'", _S(methodNames[i]));
 	strLabel += format("};\nlegend('CutFT', 'CutSC');\nxticklabel_rotate([1:%d],90, methodLabels,'interpreter','none');\ntitle('FMeasure');\n\n", methodNames.size());
-
+	//组织数据库路径
 	for (int i = 0; i < dbNames.size(); i++){
 		string wkDir = rootDir + dbNames[i] + "/";
 		string imgNameW = wkDir + "/Imgs/*.jpg", gtImgW = wkDir + "/Imgs/*.png";
@@ -44,18 +44,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			CmFile::MkDir(salDir);	
 			CmFile::MkDir(cutDir);
 		}
-		printf("Processing dataset: %s\n", _S(dbNames[i]));
+		printf("Processing dataset: %s\n", _S(dbNames[i]));	
 		vecS namesNE;
-		int imgNum = CmFile::GetNamesNE(imgNameW, namesNE);
+		int imgNum = CmFile::GetNamesNE(imgNameW, namesNE);	//获得图片文件名
 		for (int j = 0; j < exeNames.size(); j++)	{
 			CmTimer tm("Timer " + exeNames[j]);
 			tm.Start();
 			CStr exeName = "..\\Executable\\" + exeNames[j] + "/Get" + exeNames[j] + ".exe";
-			CmFile::RunProgram(exeName, getExeParameters(exeNames[j], wkDir), true, false);
+			CmFile::RunProgram(exeName, getExeParameters(exeNames[j], wkDir), true, false);	//执行算法
 			tm.Stop();
 			printf("Speed %s: %g seconds = %g fps\n", _S(exeNames[j]), tm.TimeInSeconds() / imgNum, imgNum / tm.TimeInSeconds());
 		}
-		//Produce Saliency Cut Map.
+		//Produce Saliency Cut Map. //得到显著图
 		SalSegmentation(imgNameW, salDir, cutDir, methodNames);
 		printf("Evaluating saliency maps in ./Saliency/\n");
 		AverageMap(wkDir);
