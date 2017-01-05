@@ -55,11 +55,11 @@ int _tmain(int argc, _TCHAR* argv[])
 			tm.Stop();
 			printf("Speed %s: %g seconds = %g fps\n", _S(exeNames[j]), tm.TimeInSeconds() / imgNum, imgNum / tm.TimeInSeconds());
 		}
-		//Produce Saliency Cut Map. //得到显著图
+		//Produce Saliency Cut Map. //分离显著图
 		SalSegmentation(imgNameW, salDir, cutDir, methodNames);
 		printf("Evaluating saliency maps in ./Saliency/\n");
 		AverageMap(wkDir);
-		CmEvaluation::Evaluate(gtImgW, salDir, resultFileName, methodNames);
+		CmEvaluation::Evaluate(gtImgW, salDir, resultFileName, methodNames);	//结果评估函数
 		CmFile::AppendStr(resultFileName, "\n\n\nfigure(5);\n");
 		CmEvaluation::EvalueMask(gtImgW, cutDir, methodNames, resultFileName, 0.3, true, "FT");
 		CmEvaluation::EvalueMask(gtImgW, cutDir, methodNames, resultFileName, 0.3, true, "SC");
@@ -73,3 +73,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 } 
 
+int main(int argc, _TCHAR* argv[])
+{
+	const char* _methodNames[] = {
+		// "FT", "GC", "HC", "RC", "GMR", "GU", "MSS", "PCA", "SWD"	//方法名
+		"GC", "HC"
+	};
+
+	const char* _exeNames[] = { "GC", "HC"};//"FT", "GC", "HC", "RC", "GMR", "GU", "MSS" };	//应用名
+	const char* _dbNames[] = { "DataSet1", "DataSet2" };	//数据库名
+
+	vecS dbNames = charPointers2StrVec(_dbNames);
+	vecS exeNames = charPointers2StrVec(_exeNames);
+	vecS methodNames = charPointers2StrVec(_methodNames);
